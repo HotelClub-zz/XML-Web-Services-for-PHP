@@ -1,9 +1,11 @@
-Welcome to HotelClub 1.0!
+Welcome to HotelClub XML Web Services for PHP version 1.0!
+
+A PHP library for interfacing with HotelClub XML Web Services
 
 SYSTEM REQUIREMENTS
 -------------------
 
-HotelClub requires PHP 5.2.4 or later.
+HotelClub XML Web Services for PHP requires PHP 5.2.4 or later.
 
 LICENSE
 -------
