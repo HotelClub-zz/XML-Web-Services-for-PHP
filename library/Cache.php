@@ -13,7 +13,7 @@
  * we can send you a copy immediately.
  *
  * @category   HotelClub
- * @package    HotelClub_Content
+ * @package    HotelClub_Cache
  * @subpackage PHP
  * @copyright  Copyright (c) 2010 HotelClub Pty Ltd (http://www.hotelclub.com)
  * @license    http://www.opensource.org/licenses/bsd-license.php    New BSD License

@@ -1,9 +1,0 @@
-INSTALLATION
-------------
-
-HotelClub requires no special installation steps. Simply open config.php and
-update the $config['affiliateId'] and $config['affiliatePassword'] values to
-those of your own Affiliate ID and Affiliate Password respectively.
-
-Not a HotelClub Affiliate yet? Join the HotelClub affiliate programme at
-https://affiliates.hotelclub.com/

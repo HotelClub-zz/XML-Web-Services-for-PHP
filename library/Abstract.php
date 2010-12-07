@@ -152,7 +152,7 @@ abstract class HotelClub_Abstract
     /**
      * Get Soap Client
      *
-     * @return SoapHeader
+     * @return SoapClient
      */
     protected function _getSoapClient()
     {
