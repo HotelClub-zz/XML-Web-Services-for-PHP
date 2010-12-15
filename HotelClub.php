@@ -19,20 +19,22 @@
  * @version    SVN: $Id$
  */
 
+set_include_path(dirname(__FILE__) . '/library');
+
 /**
  * @see HotelClub_Availability
  */
-require_once 'library/Availability.php';
+require_once 'Availability.php';
 
 /**
  * @see HotelClub_Content
  */
-require_once 'library/Content.php';
+require_once 'Content.php';
 
 /**
  * @see HotelClub_Reservation
  */
-require_once 'library/Reservation.php';
+require_once 'Reservation.php';
 
 /**
  * HotelClub class
