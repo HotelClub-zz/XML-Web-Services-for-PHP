@@ -34,19 +34,10 @@ $config['affiliate']['id'] = null;
 $config['affiliate']['password'] = null;
 
 /**
- * Disable Cache.
+ * Protocol.
  *
- * Disable caching of web service responses.
+ * The connection protocol (http: or https:).
  *
- * @var bool
+ * @var string
  */
-$config['cache']['disable'] = false;
-
-/**
- * Cache TTL.
- *
- * Cache time-to-live in seconds.
- *
- * @var int
- */
-$config['cache']['ttl']['default'] = 86400;
+$config['protocol'] = 'https:';

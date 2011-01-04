@@ -19,23 +19,6 @@
  * @version    SVN: $Id$
  */
 
-set_include_path(dirname(__FILE__) . '/library');
-
-/**
- * @see HotelClub_Availability
- */
-require_once 'Availability.php';
-
-/**
- * @see HotelClub_Content
- */
-require_once 'Content.php';
-
-/**
- * @see HotelClub_Reservation
- */
-require_once 'Reservation.php';
-
 /**
  * HotelClub class
  *
@@ -47,30 +30,131 @@ require_once 'Reservation.php';
 class HotelClub
 {
     /**
-     * Availability.
-     *
-     * @var HotelClub_Availability
+     * Version.
      */
-    public $Availability = null;
+    const VERSION = 2.0;
 
     /**
-     * Content.
-     *
-     * @var HotelClub_Content
+     * XMLNS URL.
      */
-    public $Content = null;
+    const XMLNS = 'https://xml.hotelclub.net/xmlws/services/v2/';
 
     /**
-     * Reservation.
+     * Arguments.
      *
-     * @var HotelClub_Reservation
+     * @var array
      */
-    public $Reservation = null;
+    protected $_arguments = array();
 
+    /**
+     * Method Name.
+     *
+     * @var string
+     */
+    protected $_methodName = null;
+
+    /**
+     * WSDL URL.
+     *
+     * @var string
+     */
+    protected $_wsdl = null;
+
+    /**
+     * Config.
+     *
+     * @var HotelClub_Config
+     */
+    public $config = array();
+
+    /**
+     * Call
+     *
+     * @param  string $name The name of the method being called.
+     * @param  string $arguments The arguments to pass to the method.
+     * @return mixed
+     */
+    public function __call($methodName, $arguments)
+    {
+        $arguments[0]['Version'] = self::VERSION;
+        $this->_arguments = $arguments;
+        $this->_methodName = ucfirst($methodName);
+        switch ($this->_methodName) {
+            case 'HotelAvailabilityRequest':
+            case 'HotelSearchRequest':
+                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Availability.asmx?WSDL';
+                break;
+            case 'CityListRequest':
+            case 'CountryListRequest':
+            case 'HotelImageRequest':
+            case 'HotelInfoRequest':
+            case 'HotelListRequest':
+            case 'HotelSuburbListRequest':
+            case 'MonthlyFavouriteCityListRequest':
+            case 'TopCityListRequest':
+                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Content.asmx?WSDL';
+                break;
+            case 'BookingStatusRequest':
+            case 'HotelBookingRequest':
+            case 'HotelRateRuleRequest':
+                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Reservation.asmx?WSDL';
+                break;
+        }
+        try {
+            $soapClient = $this->_getSoapClient();
+            $soapHeader = $this->_getSoapHeader();
+            $response = $soapClient->__soapCall($this->_methodName, $this->_arguments, null, $soapHeader);
+            return $response;
+        }
+        catch (Exception $e) {
+            echo $e->faultstring;
+            return false;
+        }
+    }
+
+    /**
+     * Construct
+     *
+     * @return void
+     */
     public function __construct()
     {
-        $this->Availability = new HotelClub_Availability();
-        $this->Content = new HotelClub_Content();
-        $this->Reservation = new HotelClub_Reservation();
+        require_once 'config.php';
+        $this->config = $config;
+    }
+
+    /**
+     * Get Soap Client
+     *
+     * @return SoapClient
+     */
+    protected function _getSoapClient()
+    {
+        return new SoapClient($this->_wsdl, array('uri' => self::XMLNS));
+    }
+
+    /**
+     * Get Soap Header
+     *
+     * @return SoapHeader
+     */
+    protected function _getSoapHeader()
+    {
+        $clientIp = null;
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $clientIp = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $clientIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        if (strlen($_SERVER['REMOTE_ADDR']) > 7) {
+            $clientIp = $_SERVER['REMOTE_ADDR'];
+        }
+        $header['AffiliateID'] = new SoapVar($this->config['affiliate']['id'], XSD_INT, null, null, null, self::XMLNS);
+        $header['Password'] = new SoapVar($this->config['affiliate']['password'], XSD_STRING, null, null, null, self::XMLNS);
+        if (!is_null($clientIp)) {
+            $header['ClientIP'] = new SoapVar($clientIp, XSD_STRING, null, null, null, self::XMLNS);
+        }
+        return new SoapHeader(self::XMLNS, 'AuthenticationInfo', new SoapVar($header, SOAP_ENC_OBJECT));
     }
 }

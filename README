@@ -18,8 +18,9 @@ Note: All configuration options can also be directly set at runtime. For example
 
 require_once 'path/to/HotelClub.php';
 $hotelClub = new HotelClub();
-$hotelClub->Content->Config->affiliate['id'] = 12345;
-$hotelClub->Content->Config->affiliate['password'] = 'mysecretpassword';
+$hotelClub->config['affiliate']['id'] = 12345;
+$hotelClub->config['affiliate']['password'] = 'mysecretpassword';
+$hotelClub->config['protocol'] = 'http:';
 
 HOTELCLUB AND RATESTOGO AFFILIATE PROGRAMME
 ---------------
@@ -38,7 +39,7 @@ $params = array(
     'LanguageCode' => 'EN',
     'CurrencyCode' => 'AUD'
 );
-$topCities = $hotelClub->Content->TopCityListRequest($params);
+$topCities = $hotelClub->TopCityListRequest($params);
 
 LICENSE
 -------
