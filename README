@@ -1,4 +1,4 @@
-Welcome to HotelClub XML Web Services for PHP version 1.0!
+HotelClub XML Web Services for PHP
 
 A PHP library for interfacing with HotelClub XML Web Services
 
@@ -11,16 +11,15 @@ INSTALLATION
 ------------
 
 HotelClub requires no special installation steps. Simply open config.php and
-update the $config['affiliateId'] and $config['affiliatePassword'] values to
+update the $config['AffiliateID'] and $config['Password'] values to
 those of your own Affiliate ID and Affiliate Password respectively.
 
 Note: All configuration options can also be directly set at runtime. For example:
 
 require_once 'path/to/HotelClub.php';
 $hotelClub = new HotelClub();
-$hotelClub->config['affiliate']['id'] = 12345;
-$hotelClub->config['affiliate']['password'] = 'mysecretpassword';
-$hotelClub->config['protocol'] = 'http:';
+$hotelClub->config['AffiliateID'] = 12345;
+$hotelClub->config['Password'] = 'mysecretpassword';
 
 HOTELCLUB AND RATESTOGO AFFILIATE PROGRAMME
 ---------------

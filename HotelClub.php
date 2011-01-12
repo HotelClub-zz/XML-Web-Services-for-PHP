@@ -40,20 +40,6 @@ class HotelClub
     const XMLNS = 'https://xml.hotelclub.net/xmlws/services/v2/';
 
     /**
-     * Arguments.
-     *
-     * @var array
-     */
-    protected $_arguments = array();
-
-    /**
-     * Method Name.
-     *
-     * @var string
-     */
-    protected $_methodName = null;
-
-    /**
      * WSDL URL.
      *
      * @var string
@@ -74,15 +60,14 @@ class HotelClub
      * @param  string $arguments The arguments to pass to the method.
      * @return mixed
      */
-    public function __call($methodName, $arguments)
+    public function __call($name, $arguments)
     {
+        $name = ucfirst($name);
         $arguments[0]['Version'] = self::VERSION;
-        $this->_arguments = $arguments;
-        $this->_methodName = ucfirst($methodName);
-        switch ($this->_methodName) {
+        switch ($name) {
             case 'HotelAvailabilityRequest':
             case 'HotelSearchRequest':
-                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Availability.asmx?WSDL';
+                $this->_wsdl = $this->config['protocol'] . '://xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Availability.asmx?WSDL';
                 break;
             case 'CityListRequest':
             case 'CountryListRequest':
@@ -92,18 +77,18 @@ class HotelClub
             case 'HotelSuburbListRequest':
             case 'MonthlyFavouriteCityListRequest':
             case 'TopCityListRequest':
-                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Content.asmx?WSDL';
+                $this->_wsdl = $this->config['protocol'] . '://xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Content.asmx?WSDL';
                 break;
             case 'BookingStatusRequest':
             case 'HotelBookingRequest':
             case 'HotelRateRuleRequest':
-                $this->_wsdl = $this->config['protocol'] . '//xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Reservation.asmx?WSDL';
+                $this->_wsdl = $this->config['protocol'] . '://xml.hotelclub.net/XMLWS_V2/XmlWsdl/V2.00/Reservation.asmx?WSDL';
                 break;
         }
         try {
             $soapClient = $this->_getSoapClient();
             $soapHeader = $this->_getSoapHeader();
-            $response = $soapClient->__soapCall($this->_methodName, $this->_arguments, null, $soapHeader);
+            $response = $soapClient->__soapCall($name, $arguments, null, $soapHeader);
             return $response;
         }
         catch (Exception $e) {
@@ -119,26 +104,16 @@ class HotelClub
      */
     public function __construct()
     {
-        require_once 'config.php';
+        require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'config.php';
         $this->config = $config;
     }
 
     /**
-     * Get Soap Client
+     * Get Client IP
      *
-     * @return SoapClient
+     * @return string
      */
-    protected function _getSoapClient()
-    {
-        return new SoapClient($this->_wsdl, array('uri' => self::XMLNS));
-    }
-
-    /**
-     * Get Soap Header
-     *
-     * @return SoapHeader
-     */
-    protected function _getSoapHeader()
+    protected function _getClientIp()
     {
         $clientIp = null;
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -150,8 +125,29 @@ class HotelClub
         if (strlen($_SERVER['REMOTE_ADDR']) > 7) {
             $clientIp = $_SERVER['REMOTE_ADDR'];
         }
-        $header['AffiliateID'] = new SoapVar($this->config['affiliate']['id'], XSD_INT, null, null, null, self::XMLNS);
-        $header['Password'] = new SoapVar($this->config['affiliate']['password'], XSD_STRING, null, null, null, self::XMLNS);
+        return $clientIp;
+    }
+
+    /**
+     * Get Soap Client
+     *
+     * @return SoapClient
+     */
+    protected function _getSoapClient()
+    {
+        return new SoapClient($this->_wsdl, array('features' => SOAP_SINGLE_ELEMENT_ARRAYS, 'uri' => self::XMLNS));
+    }
+
+    /**
+     * Get Soap Header
+     *
+     * @return SoapHeader
+     */
+    protected function _getSoapHeader()
+    {
+        $clientIp = $this->_getClientIp();
+        $header['AffiliateID'] = new SoapVar($this->config['AffiliateID'], XSD_INT, null, null, null, self::XMLNS);
+        $header['Password'] = new SoapVar($this->config['Password'], XSD_STRING, null, null, null, self::XMLNS);
         if (!is_null($clientIp)) {
             $header['ClientIP'] = new SoapVar($clientIp, XSD_STRING, null, null, null, self::XMLNS);
         }

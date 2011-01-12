@@ -24,20 +24,20 @@
  *
  * @var int
  */
-$config['affiliate']['id'] = null;
+$config['AffiliateID'] = null;
 
 /**
  * Affiliate Password.
  *
  * @var string
  */
-$config['affiliate']['password'] = null;
+$config['Password'] = null;
 
 /**
  * Protocol.
  *
- * The connection protocol (http: or https:).
+ * The connection protocol (http or https).
  *
  * @var string
  */
-$config['protocol'] = 'https:';
+$config['protocol'] = 'https';
